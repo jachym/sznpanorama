@@ -23,9 +23,10 @@ import os
 import json
 import sqlite3
 import time
+import ConfigParser
 
 URL = "http://vyfotpanorama.seznam.cz/cars.xml"
-INTERVAL = 1
+INTERVAL = 2
 OUTFILE_GEOJSON = os.path.join(
     os.path.dirname(__file__),
     os.path.join("..", "data", "sznpanorama.geojson")
@@ -142,6 +143,26 @@ def write_geojson(out_file):
 
     json_file.write(json.dumps(json_obj))
     json_file.close()
+
+    config = ConfigParser.ConfigParser()
+    if len(config.read([os.path.join(os.path.dirname(__file__),
+                        "sniffer.cfg")])):
+        if config.getboolean('Github', 'write'):
+            import subprocess
+            subprocess.Popen(["git", "commit", "-m",
+                              "'Automatic GeoJson update'",
+                             OUTFILE_GEOJSON],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,
+                             stdin=subprocess.PIPE
+                             )
+
+            time.sleep(1)
+            subprocess.Popen(["git", "push"],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,
+                             stdin=subprocess.PIPE
+                             )
 
 
 def _write_sqlite(cars):
