@@ -151,7 +151,7 @@ def write_geojson(out_file):
             import subprocess
             subprocess.Popen(["git", "commit", "-m",
                               "'Automatic GeoJson update'",
-                             OUTFILE_GEOJSON],
+                             OUTFILE_GEOJSON, OUTFILE_SQLITE],
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              stdin=subprocess.PIPE
